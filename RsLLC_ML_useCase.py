@@ -3,6 +3,12 @@ import pandas as pd
 import numpy as np
 import csv
 
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
 """
     use of the different files : 
         Training datasets :    
@@ -24,10 +30,10 @@ import csv
 
         
 
- 
-
 """
 
+
+#import datasets 
 halfCat = pd.read_csv("Datasets/half_catalog.csv",delimiter=';')
 fullCat = pd.read_csv("Datasets/full_catalog.csv", delimiter=';', dtype = str)
 halfClassif = pd.read_csv("Datasets/half_classified.csv",delimiter=';')
@@ -50,44 +56,12 @@ fullClassif = pd.read_csv("Datasets/full_classified.csv", delimiter=';')
 '''
 
 
+#check the data 
 print(fullCat.shape)
 print(halfCat.shape)
 print(halfNotClassif.shape)
 print(halfClassif.shape)
 
-
-'''
-    Step 1 : we must compute from the full catalog : 
-        - Commitment duration 
-        - Commitment Duration2 
-        - Billing frequency 
-        - Billing frequency2
-        - Consumption Model 
-        - Product type 
-
-'''
-
-
-
-'''
-print(fullCat.columns)
-
-prod_type_df = fullCat[['SKU', 'Product Type']]
-
-print(prod_type_df.head())
-
-#halfclassif to test 
-testHalfClassif = pd.read_csv('Datasets/half_not_classified.csv',delimiter=';')
-
-print(testHalfClassif.head())
-
-#test the merge (classify product type)
-testHalfClassif = pd.merge(halfNotClassif, prod_type_df, on='SKU', how='left')
-
-testHalfClassif.drop('Product type',axis=1, inplace=True)
-
-print(testHalfClassif.sample(6))
-'''
 
 
 '''
@@ -101,11 +75,7 @@ print(testHalfClassif.sample(6))
         we will try random forest 
 '''
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
 
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 
 # Assuming 'halfClassif', 'halfNotClassif', and 'fullCat' are your DataFrames
 # Assuming multiple columns need to be predicted in 'halfNotClassif'
@@ -122,14 +92,6 @@ halfClassif = halfClassif.drop('SKU', axis=1)
 X_train = halfClassif  # Features in 'halfClassif'
 y_train = halfClassif[['Commitment Duration', 'Commitment Duration2', 'Billing frequency', 'Billing Frequency2', 'Consumption Model', 'Product type']]  # Target columns in 'halfClassif'
 
-'''
-#test 
-y_train = y_train.drop('Commitment Duration', axis=1)
-y_train = y_train.drop('Commitment Duration2', axis=1)
-
-X_train = X_train.drop('Commitment Duration', axis=1)
-X_train = X_train.drop('Commitment Duration2', axis=1)
-'''
 
 
 # Preparing test data for prediction
@@ -141,48 +103,9 @@ X_train = X_train.drop('Commitment Duration2', axis=1)
 fullClassif = fullClassif.drop('ID', axis=1)
 fullClassif = fullClassif.drop('SKU', axis=1)
 
-'''
-#test 
-fullClassif = fullClassif.drop('Commitment Duration', axis=1)
-fullClassif = fullClassif.drop('Commitment Duration2', axis=1)
-
-mask = fullClassif['Billing frequency'] == 'Quarterly'
-
-fullClassif = fullClassif[~mask]
 
 
-'''
 
-'''
-mask = fullClassif['Commitment Duration'] == '6 M'
-
-fullClassif = fullClassif[~mask]
-
-maskDos = fullClassif['Commitment Duration'] == '1.25 YR'
-
-fullClassif = fullClassif[~maskDos]
-
-masTre = fullClassif['Commitment Duration'] == '1.42 YR'
-
-fullClassif = fullClassif[~masTre]
-
-masfour = fullClassif['Commitment Duration'] == '3.25 YR'
-
-fullClassif = fullClassif[~masfour]
-
-masfour = fullClassif['Commitment Duration'] == '7 YR'
-
-fullClassif = fullClassif[~masfour]
-
-masfour = fullClassif['Commitment Duration'] == '3.19 YR'
-
-fullClassif = fullClassif[~masfour]
-
-masfour = fullClassif['Commitment Duration'] == '1.22 YR'
-
-fullClassif = fullClassif[~masfour]
-'''
-#test
 training_labels1 = set(X_train['Commitment Duration'].unique())
 
 training_labels2 = set(X_train['Commitment Duration2'].unique())
@@ -206,7 +129,6 @@ fullClassif = fullClassif[mask2]
 
 
 
-#train_set, testo = train_test_split(fullClassif, test_size=0.2, random_state=42)
 #get only trained on labels 
 X_test = fullClassif.copy()  # Features in 'fullCat'
 y_test = fullClassif.copy()
@@ -223,11 +145,7 @@ for col in X_train.select_dtypes(include='object').columns:
 rf_classifier = RandomForestClassifier(n_estimators=100)  # You can adjust parameters if needed
 rf_classifier.fit(X_train, y_train)
 
-'''
-Model test
-X_test = halfClassif.copy()
-y_test = halfClassif.copy()
-'''
+
 
 
 
@@ -247,13 +165,30 @@ halfNotClassif[['Commitment Duration', 'Commitment Duration2', 'Billing frequenc
 #print('accuracy = ' + str(acc))
 # 'halfNotClassif' DataFrame now contains the predicted classes in the respective columns
 
-halfNotClassif.to_csv('testo.csv', quoting=csv.QUOTE_ALL)
-
-
+halfNotClassif.to_csv('halfCleanedRf.csv', quoting=csv.QUOTE_ALL)
 
 
 #metrics 
 
+'''
+    scikit learn metrics : accuracy_score, classification report ...etc
+    result  : 
+        ValueError: multiclass-multioutput format is not supported
+'''
+'''
+write our own metrics (hamming loss) (designed for multiclass)
+get the number of samples where the true labels differ from the predicted labels.
+
+
+'''
+def custom_hamming_loss(y_true, y_pred):
+    # Calculate the fraction of labels that are incorrectly predicted
+    incorrect_labels = sum([set(true_labels) != set(pred_labels) for true_labels, pred_labels in zip(y_true, y_pred)])
+    return incorrect_labels / len(y_true)
+
+# Calculate custom Hamming Loss
+hamming_loss_value = custom_hamming_loss(X_test, predicted_classes)
+print("Custom Hamming Loss:", hamming_loss_value)
 
 
 

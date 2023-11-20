@@ -12,7 +12,7 @@ To handle this, various classification models were considered, with a focus on c
 2. **Choosing Suitable Imputation Technique:** Traditional imputation methods might not be adequate for this dataset due to potential inaccuracies or biases in representing missing values.
 
 
-### Random Forest
+## Random Forest Algorithm 
 
 Random Forest stands out in classification tasks due to its ensemble nature and inherent ability to create robust models. Unlike individual decision trees, Random Forest constructs multiple trees and aggregates their predictions, harnessing the collective wisdom of these diverse trees to achieve better accuracy and robustness. Its strength lies in:
 
