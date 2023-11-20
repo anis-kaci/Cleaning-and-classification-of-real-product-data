@@ -28,5 +28,5 @@ The catalog data was obtained as a compilation from various sources of the compa
 - **Classification Outcome:** The Random Forest model effectively categorized products into hardware, software, and service segments, aiding in organizing the extensive catalog for improved usability and navigation.
 
 ## Next Steps
-- **Continuous Improvement:** Ongoing efforts to refine the cleaning process for better standardization and explore advanced classification techniques.
+- **Continuous Improvement:** Ongoing efforts to refine the cleaning process for better standardization, fine tuning and explore advanced classification techniques.
 - **Integration:** Integrate the cleaned and classified catalog into the company for improved accessibility and customer experience.

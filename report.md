@@ -38,6 +38,9 @@ The Hamming Loss computation involves comparing the sets of true and predicted l
 #### Results
 - **Random Forest:** Achieved Hamming loss of 0.0001305760033949761 
 
+
+#### Model Improvements 
+
 To enhance the performance of a Random Forest classifier, several strategies can be employed, focusing on optimizing hyperparameters and refining model settings. Key approaches include:
 
 1. **Hyperparameter Tuning:** Utilize techniques like Grid Search or Random Search to explore a range of hyperparameters (such as the number of trees, maximum depth, minimum samples per leaf) and find the optimal configuration that maximizes performance metrics like accuracy or F1-score.
