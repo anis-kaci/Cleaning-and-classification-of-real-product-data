@@ -72,13 +72,11 @@ print(halfClassif.shape)
 
         
     the model we ll use : 
-        we will try random forest 
+        Random forest 
 '''
 
 
 
-# Assuming 'halfClassif', 'halfNotClassif', and 'fullCat' are your DataFrames
-# Assuming multiple columns need to be predicted in 'halfNotClassif'
 
 fullClassif = fullClassif.dropna()
 halfClassif = halfClassif.dropna()
@@ -109,7 +107,7 @@ fullClassif = fullClassif.drop('SKU', axis=1)
 training_labels1 = set(X_train['Commitment Duration'].unique())
 
 training_labels2 = set(X_train['Commitment Duration2'].unique())
-# Assuming 'fullClassif' is your DataFrame and 'unique_values_set' contains the values you want to filter out
+
 mask = fullClassif['Commitment Duration'].isin(training_labels1)
 fullClassif = fullClassif[mask]
 
@@ -120,7 +118,7 @@ fullClassif = fullClassif[mask2]
 training_labels1 = set(X_train['Billing frequency'].unique())
 
 training_labels2 = set(X_train['Billing Frequency2'].unique())
-# Assuming 'fullClassif' is your DataFrame and 'unique_values_set' contains the values you want to filter out
+
 mask = fullClassif['Billing frequency'].isin(training_labels1)
 fullClassif = fullClassif[mask]
 
@@ -142,10 +140,8 @@ for col in X_train.select_dtypes(include='object').columns:
 
     
 # Training the RandomForestClassifier model
-rf_classifier = RandomForestClassifier(n_estimators=100)  # You can adjust parameters if needed
+rf_classifier = RandomForestClassifier(n_estimators=100)  
 rf_classifier.fit(X_train, y_train)
-
-
 
 
 
@@ -159,11 +155,11 @@ predicted_classes = rf_classifier.predict(X_test)
 
 print(predicted_classes[1:10])
 #acc = accuracy_score(y_test, predicted_classes)
+
 # Filling the predicted classes into 'halfNotClassif'
 
 halfNotClassif[['Commitment Duration', 'Commitment Duration2', 'Billing frequency', 'Billing Frequency2', 'Consumption Model', 'Product type']] = predicted_classes[30582:]
-#print('accuracy = ' + str(acc))
-# 'halfNotClassif' DataFrame now contains the predicted classes in the respective columns
+
 
 halfNotClassif.to_csv('halfCleanedRf.csv', quoting=csv.QUOTE_ALL)
 
